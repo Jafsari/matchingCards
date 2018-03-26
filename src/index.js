@@ -9,7 +9,7 @@ class Square extends React.Component {
         super(props);
         this.state = {
             visibility: "None",
-            backgroundColor: "pink",
+            backgroundColor: this.props.bg || "pink",
         }
     };
 
@@ -30,7 +30,6 @@ class Square extends React.Component {
 class MatchedBoard extends React.Component {
     constructor(props) {
         super(props)
-        console.log(this.props.pairs);
         this.state = {
             user: this.props.value,
             matchedPairs: this.props.pairs,
@@ -40,7 +39,8 @@ class MatchedBoard extends React.Component {
     renderSquare(card) {
         return <Square
             key={card.name + card.suit}
-            value={card}/>
+            value={card}
+            bg="white"/>
     }
 
     render() {
@@ -70,11 +70,12 @@ class Board extends React.Component {
         this.state = {
             cards: shuffle(createDeck()),
             currentPlayer: true,
+            remainingCards: 52,
             pairs: {
-                'Jenny': [],
+                'You': [],
                 'Computer': []
-            }
-
+            },
+            winningMessage: "",
         }
         this.cardsChosen = [];
         this.clickedSquares = [];
@@ -94,10 +95,11 @@ class Board extends React.Component {
     }
 
     handleEndOfTurn() {
+        let user = this.state.currentPlayer ? 'You' : 'Computer'
+
         // if the value of the 2 cards match
         if (checkMatch(this.cardsChosen)) {
-            let user = this.state.currentPlayer ? 'Jenny' : 'Computer'
-            console.log("match!");
+            this.state.remainingCards -= 2;
             // making a copy of the points/pairs dictionary to use in setState
             let pairs = Object.assign({}, this.state.pairs);
 
@@ -107,7 +109,6 @@ class Board extends React.Component {
             this.cardsChosen.forEach(card => {
                 pairs[user].push(card)
             });
-            console.log(this.state.pairs[user])
 
             this.setState({
                 pairs: pairs,
@@ -120,11 +121,19 @@ class Board extends React.Component {
             this.clickedSquares[1].setState({
                 visibility: "hidden",
             });
+
+
         }
         else {
             this.setState({
                 currentPlayer: !this.state.currentPlayer,
             });
+        }
+        if (this.state.remainingCards == 0) {
+            this.setState({
+                winningMessage: "WINNER: " + user,
+            })
+            return
         }
         // reset clicked cards because "turn" is over (not necessarily user)
         this.clickedSquares[0].setState({
@@ -147,7 +156,7 @@ class Board extends React.Component {
 
     render() {
         let cardSquare = [];
-        let status = this.state.currentPlayer ? 'Jenny' : 'Computer';
+        let status = this.state.currentPlayer ? 'You' : 'Computer';
 
         for (let i = 0; i < this.state.cards.length; i++) {
             cardSquare.push(this.renderSquare(this.state.cards[i]))
@@ -155,13 +164,14 @@ class Board extends React.Component {
 
         return (
             <div>
-                <div className="status">Your move: <strong>{status}</strong></div>
+                <div className="status">Current move: <strong>{status}</strong></div>
+                <div className="status"><strong>{this.state.winningMessage}</strong></div>
                 <div className="row">
                     <div className="col-2">
                         <MatchedBoard
-                            key="Jenny"
-                            value="Jenny"
-                            pairs={this.state.pairs["Jenny"]} />
+                            key="You"
+                            value="You"
+                            pairs={this.state.pairs["You"]} />
                     </div>
 
                     <div className="col-8">
@@ -183,6 +193,7 @@ class Board extends React.Component {
 
 class Game extends React.Component {
     render() {
+
         return (
             <div className="game">
                 <div><h2>Card Matching</h2></div>
