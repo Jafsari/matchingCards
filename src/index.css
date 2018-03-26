@@ -18,6 +18,11 @@ body {
     width: 70px;
   }
 
+  .status {
+      margin-top: 10px;
+      margin-bottom: 10px;
+  }
+
   .scoreboard {
     display: flex;
     justify-content: space-between;

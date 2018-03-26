@@ -16,8 +16,8 @@ class Square extends React.Component {
         let bgColor = this.state.backgroundColor;
         let displayStatus = this.state.visibility;
         return (
-            <button className="square" style={{ backgroundColor: bgColor, visibility: displayStatus }} 
-            onClick={() => this.props.onClick(this)}>
+            <button className="square" style={{ backgroundColor: bgColor, visibility: displayStatus }}
+                onClick={() => this.props.onClick(this)}>
                 <div>{this.props.value.name}</div>
                 <div>{this.props.value.suit}</div>
             </button>
@@ -51,40 +51,45 @@ class Board extends React.Component {
 
         // once the user has selected 2 cards
         if (this.cardsChosen.length === 2) {
-            // if the value of the 2 cards match
-            if (checkMatch(this.cardsChosen)) {
-                console.log("match!");
-                // making a copy of the points dictionary to use in setState
-                let points = Object.assign({}, this.state.points);
-                // increase current player's point
-                points[this.state.currentPlayer ? 'Jenny' : 'Computer'] += 1;
-                this.setState({
-                    points: points,
-                });
-                
-                // hide the visibility of the 2 matched cards
-                this.clickedSquares[0].setState({
-                    visibility: "hidden",
-                });
-                this.clickedSquares[1].setState({
-                    visibility: "hidden",
-                });
-            } 
-            else {
-                this.setState({
-                    currentPlayer: !this.state.currentPlayer,
-                });
-            }
-            // reset clicked cards because "turn" is over (not necessarily user)
-            this.clickedSquares[0].setState({
-                backgroundColor: "pink",
-            })
-            this.clickedSquares[1].setState({
-                backgroundColor: "pink",
-            })
-            this.cardsChosen = [];
-        this.clickedSquares = [];
+            setTimeout(()=>{this.handleEndOfTurn()},300);
         }
+    }
+
+    handleEndOfTurn() {
+        // if the value of the 2 cards match
+        if (checkMatch(this.cardsChosen)) {
+            console.log("match!");
+            // making a copy of the points dictionary to use in setState
+            let points = Object.assign({}, this.state.points);
+            // increase current player's point
+            points[this.state.currentPlayer ? 'Jenny' : 'Computer'] += 1;
+            this.setState({
+                points: points,
+            });
+
+            // hide the visibility of the 2 matched cards
+            this.clickedSquares[0].setState({
+                visibility: "hidden",
+            });
+            this.clickedSquares[1].setState({
+                visibility: "hidden",
+            });
+        }
+        else {
+            this.setState({
+                currentPlayer: !this.state.currentPlayer,
+            });
+        }
+        // reset clicked cards because "turn" is over (not necessarily user)
+        this.clickedSquares[0].setState({
+            backgroundColor: "pink",
+        })
+        this.clickedSquares[1].setState({
+            backgroundColor: "pink",
+        })
+        this.cardsChosen = [];
+        this.clickedSquares = [];
+
     }
 
     renderSquare(card) {
@@ -96,7 +101,7 @@ class Board extends React.Component {
 
     render() {
         let cardSquare = [];
-        let status = 'Your move: ' + (this.state.currentPlayer ? 'Jenny' : 'Computer');
+        let status = this.state.currentPlayer ? 'Jenny' : 'Computer';
 
         for (let i = 0; i < this.state.cards.length; i++) {
             cardSquare.push(this.renderSquare(this.state.cards[i]))
@@ -104,7 +109,7 @@ class Board extends React.Component {
 
         return (
             <div>
-                <div className="status">{status}</div>
+                <div className="status">Your move: <strong>{status}</strong></div>
                 <div>
                     {cardSquare}
                 </div>
