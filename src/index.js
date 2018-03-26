@@ -12,10 +12,11 @@ class Square extends React.Component {
     };
 
     render() {
-        return(
-        <button className="square" onClick={()=>this.props.onClick()}>
-            {this.props.value}
-        </button>
+        return (
+            <button className="square" onClick={() => this.props.onClick()}>
+                <div>{this.props.value.name}</div>
+                <div>{this.props.value.suit}</div>
+            </button>
         )
     }
 }
@@ -25,33 +26,38 @@ class Board extends React.Component {
         super(props);
         this.state = {
             cards: shuffle(createDeck()),
-            squares: Array(1).fill(null),
 
         }
     };
 
     handleClick(i) {
         console.log(this.state.cards);
-        const squares = this.state.squares.slice();
-        squares[i] = 'X';
-        this.setState({squares: squares});
-      }
+        const squares = this.state.cards.slice();
+        this.setState({ squares: squares });
+    }
 
-    renderSquare(i) {
-        return (
-          <Square
-            value={this.state.squares[i]}
-            onClick={() => this.handleClick(i)}
-          />
-        );
-      }
+    renderSquare(card) {
+        return <Square
+            key={card.name + card.suit}
+            value={card}
+            onClick={() => { this.handleClick(card) }} />;
+    }
 
     render() {
+        let cardSquare = [];
+        let status = 'Your move: ' + (this.state.currentPlayer ? 'Jenny' : 'Computer');
+
+        for (let i = 0; i < this.state.cards.length; i++) {
+            cardSquare.push(this.renderSquare(this.state.cards[i]))
+        }
+
         return (
             <div>
+                <div className="status">{status}</div>
                 <div>
-                    {this.renderSquare(0)}
+                    {cardSquare}
                 </div>
+
             </div>
         );
     }
