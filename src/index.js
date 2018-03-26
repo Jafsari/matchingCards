@@ -7,13 +7,15 @@ class Square extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: "hi",
+            backgroundColor: "pink",
         }
     };
 
     render() {
+        let bgColor = this.state.backgroundColor;
         return (
-            <button className="square" onClick={() => this.props.onClick()}>
+            <button className="square" style={{ backgroundColor: bgColor }} 
+            onClick={() => this.props.onClick(this)}>
                 <div>{this.props.value.name}</div>
                 <div>{this.props.value.suit}</div>
             </button>
@@ -34,12 +36,16 @@ class Board extends React.Component {
 
         }
         this.cardsChosen = [];
+        this.clickedSquares = [];
     };
 
-    handleClick(card) {
+    handleClick(card, square) {
         this.cardsChosen.push(card);
+        this.clickedSquares.push(square);
         console.log(this.cardsChosen);
-        this.clicks += 1;
+        square.setState({
+            backgroundColor: "red",
+        })
 
         // once the user has selected 2 cards
         if (this.cardsChosen.length === 2) {
@@ -58,7 +64,16 @@ class Board extends React.Component {
                 })
             }
             // reset clicked cards because "turn" is over (not necessarily user)
+            this.clickedSquares[0].setState({
+                backgroundColor: "pink",
+            })
+            this.clickedSquares[1].setState({
+                backgroundColor: "pink",
+            })
+
             this.cardsChosen = [];
+            this.clickedSquares = [];
+            
 
         }
 
@@ -69,7 +84,7 @@ class Board extends React.Component {
         return <Square
             key={card.name + card.suit}
             value={card}
-            onClick={() => { this.handleClick(card) }} />;
+            onClick={(square) => { this.handleClick(card, square) }} />;
     }
 
     render() {
