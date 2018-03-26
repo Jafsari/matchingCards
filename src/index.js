@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
+// individual card on the board
 class Square extends React.Component {
     constructor(props) {
         super(props);
@@ -26,21 +26,39 @@ class Square extends React.Component {
     }
 }
 
+// section for holding and displaying matched cards
 class MatchedBoard extends React.Component {
     constructor(props) {
         super(props)
+        console.log(this.props.pairs);
         this.state = {
             user: this.props.value,
-            score: this.props.score,
-            matchedPairs: [],
+            matchedPairs: this.props.pairs,
         };
     }
 
+    renderSquare(card) {
+        return <Square
+            key={card.name + card.suit}
+            value={card}/>
+    }
+
     render() {
+        let matchedCards = [];
+        let score = this.state.matchedPairs.length / 2;
+        this.state.matchedPairs.forEach(card => {
+            matchedCards.push(this.renderSquare(card));
+        });
         return (
             <div>
                 <div><h3>{this.state.user}</h3></div>
-                <div><h3 className="matchedBoardScore">{this.props.score}</h3></div>
+                <div><h3 className="matchedBoardScore">{score}</h3></div>
+                <div>
+                    {this.state.score}
+                </div>
+                <div>
+                    {matchedCards}
+                </div>
             </div>
         );
     }
@@ -49,13 +67,12 @@ class MatchedBoard extends React.Component {
 class Board extends React.Component {
     constructor(props) {
         super(props);
-        console.log(this.props.value);
         this.state = {
             cards: shuffle(createDeck()),
             currentPlayer: true,
-            points: {
-                'Jenny': 0,
-                'Computer': 0
+            pairs: {
+                'Jenny': [],
+                'Computer': []
             }
 
         }
@@ -79,13 +96,21 @@ class Board extends React.Component {
     handleEndOfTurn() {
         // if the value of the 2 cards match
         if (checkMatch(this.cardsChosen)) {
+            let user = this.state.currentPlayer ? 'Jenny' : 'Computer'
             console.log("match!");
-            // making a copy of the points dictionary to use in setState
-            let points = Object.assign({}, this.state.points);
+            // making a copy of the points/pairs dictionary to use in setState
+            let pairs = Object.assign({}, this.state.pairs);
+
             // increase current player's point
-            points[this.state.currentPlayer ? 'Jenny' : 'Computer'] += 1;
+
+            // add the set to the user's pairs
+            this.cardsChosen.forEach(card => {
+                pairs[user].push(card)
+            });
+            console.log(this.state.pairs[user])
+
             this.setState({
-                points: points,
+                pairs: pairs,
             });
 
             // hide the visibility of the 2 matched cards
@@ -136,26 +161,20 @@ class Board extends React.Component {
                         <MatchedBoard
                             key="Jenny"
                             value="Jenny"
-                            score={this.state.points["Jenny"]}/>
+                            pairs={this.state.pairs["Jenny"]} />
                     </div>
 
                     <div className="col-8">
                         {cardSquare}
                     </div>
 
-
                     <div className="col-2">
                         <MatchedBoard
-                        key="Computer"
-                        value="Computer"
-                        score = {this.state.points["Computer"]}/>
+                            key="Computer"
+                            value="Computer"
+                            pairs={this.state.pairs["Computer"]} />
                     </div>
-
                 </div>
-                <div className="scoreboard">
-                <span id="userScore">Jenny: {this.state.points["Jenny"]}</span>
-                <span id="computerScore">Computer: {this.state.points["Computer"]}</span>
-            </div>
             </div>
         );
     }
@@ -165,12 +184,12 @@ class Board extends React.Component {
 class Game extends React.Component {
     render() {
         return (
-                <div className="game">
-                    <div><h2>Card Matching</h2></div>
-                    <div className="game-board">
-                        <Board />
-                    </div>
+            <div className="game">
+                <div><h2>Card Matching</h2></div>
+                <div className="game-board">
+                    <Board />
                 </div>
+            </div>
         );
     }
 }
