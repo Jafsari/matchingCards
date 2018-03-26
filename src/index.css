@@ -1,10 +1,15 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800');
+
 body {
+    font-family: "Open-Sans", sans-serif;
     font: 14px;
     margin: 20px;
   }
 
+
 .game {
     margin: 10%;
+    margin-top: 5%;
     text-align:center;
   }
 
@@ -16,6 +21,8 @@ body {
     height: 90px;
     text-align: center;
     width: 70px;
+    border-radius: 5px;
+    margin: 3px;
   }
 
   .status {
@@ -26,4 +33,12 @@ body {
   .scoreboard {
     display: flex;
     justify-content: space-between;
+}
+
+.matchedBoard {
+    text-align: center;
+}
+
+.matchedBoardScore {
+    font-weight: 300;
 }

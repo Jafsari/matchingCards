@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+
 class Square extends React.Component {
     constructor(props) {
         super(props);
@@ -25,9 +26,30 @@ class Square extends React.Component {
     }
 }
 
+class MatchedBoard extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            user: this.props.value,
+            score: this.props.score,
+            matchedPairs: [],
+        };
+    }
+
+    render() {
+        return (
+            <div>
+                <div><h3>{this.state.user}</h3></div>
+                <div><h3 className="matchedBoardScore">{this.props.score}</h3></div>
+            </div>
+        );
+    }
+}
+
 class Board extends React.Component {
     constructor(props) {
         super(props);
+        console.log(this.props.value);
         this.state = {
             cards: shuffle(createDeck()),
             currentPlayer: true,
@@ -44,14 +66,13 @@ class Board extends React.Component {
     handleClick(card, square) {
         this.cardsChosen.push(card);
         this.clickedSquares.push(square);
-        console.log(this.cardsChosen);
         square.setState({
             backgroundColor: "red",
         })
 
         // once the user has selected 2 cards
         if (this.cardsChosen.length === 2) {
-            setTimeout(()=>{this.handleEndOfTurn()},300);
+            setTimeout(() => { this.handleEndOfTurn() }, 300);
         }
     }
 
@@ -110,14 +131,31 @@ class Board extends React.Component {
         return (
             <div>
                 <div className="status">Your move: <strong>{status}</strong></div>
-                <div>
-                    {cardSquare}
-                </div>
+                <div className="row">
+                    <div className="col-2">
+                        <MatchedBoard
+                            key="Jenny"
+                            value="Jenny"
+                            score={this.state.points["Jenny"]}/>
+                    </div>
 
-                <div className="scoreboard">
-                    <span id="userScore">Jenny: {this.state.points["Jenny"]}</span>
-                    <span id="computerScore">Computer: {this.state.points["Computer"]}</span>
+                    <div className="col-8">
+                        {cardSquare}
+                    </div>
+
+
+                    <div className="col-2">
+                        <MatchedBoard
+                        key="Computer"
+                        value="Computer"
+                        score = {this.state.points["Computer"]}/>
+                    </div>
+
                 </div>
+                <div className="scoreboard">
+                <span id="userScore">Jenny: {this.state.points["Jenny"]}</span>
+                <span id="computerScore">Computer: {this.state.points["Computer"]}</span>
+            </div>
             </div>
         );
     }
@@ -127,16 +165,12 @@ class Board extends React.Component {
 class Game extends React.Component {
     render() {
         return (
-            <div className="game">
-                <div><h2>Card Matching</h2></div>
-                <div className="game-board">
-                    <Board />
+                <div className="game">
+                    <div><h2>Card Matching</h2></div>
+                    <div className="game-board">
+                        <Board />
+                    </div>
                 </div>
-                <div className="game-info">
-                    <div>{/* status */}</div>
-                    <ol>{/* TODO */}</ol>
-                </div>
-            </div>
         );
     }
 }
