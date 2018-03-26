@@ -17,3 +17,8 @@ body {
     text-align: center;
     width: 70px;
   }
+
+  .scoreboard {
+    display: flex;
+    justify-content: space-between;
+}

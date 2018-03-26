@@ -26,14 +26,26 @@ class Board extends React.Component {
         super(props);
         this.state = {
             cards: shuffle(createDeck()),
+            currentPlayer: true,
+            points: {
+                'Jenny': 0,
+                'Computer': 0
+            }
 
         }
+        this.clicks = 0;
     };
 
     handleClick(i) {
         console.log(this.state.cards);
-        const squares = this.state.cards.slice();
-        this.setState({ squares: squares });
+        this.clicks += 1;
+        if (this.clicks >= 2) {
+            this.setState({
+                currentPlayer: !this.state.currentPlayer
+            })
+            this.clicks = 0;
+        }
+        
     }
 
     renderSquare(card) {
@@ -58,6 +70,10 @@ class Board extends React.Component {
                     {cardSquare}
                 </div>
 
+                <div className="scoreboard">
+                    <span id="userScore">Jenny: {this.state.points["Jenny"]}</span>
+                    <span id="computerScore">Computer: {this.state.points["Computer"]}</span>
+                </div>
             </div>
         );
     }
