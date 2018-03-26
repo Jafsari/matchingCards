@@ -33,19 +33,36 @@ class Board extends React.Component {
             }
 
         }
-        this.clicks = 0;
+        this.cardsChosen = [];
     };
 
-    handleClick(i) {
-        console.log(this.state.cards);
+    handleClick(card) {
+        this.cardsChosen.push(card);
+        console.log(this.cardsChosen);
         this.clicks += 1;
-        if (this.clicks >= 2) {
-            this.setState({
-                currentPlayer: !this.state.currentPlayer
-            })
-            this.clicks = 0;
+
+        // once the user has selected 2 cards
+        if (this.cardsChosen.length === 2) {
+            if (checkMatch(this.cardsChosen)) {
+                console.log("match!");
+                // making a copy of the points dictionary to use in setState
+                let points = Object.assign({}, this.state.points);
+                points[this.state.currentPlayer ? 'Jenny' : 'Computer'] += 1;
+                this.setState({
+                    points: points,
+                })
+            } 
+            else {
+                this.setState({
+                    currentPlayer: !this.state.currentPlayer,
+                })
+            }
+            // reset clicked cards because "turn" is over (not necessarily user)
+            this.cardsChosen = [];
+
         }
-        
+
+
     }
 
     renderSquare(card) {
@@ -97,7 +114,11 @@ class Game extends React.Component {
     }
 }
 
-// =======================================
+// ===============CARD METHODS========================
+
+function checkMatch(cards) {
+    return cards[0].name === cards[1].name;
+}
 
 function shuffle(a) {
     for (let i = a.length - 1; i > 0; i--) {
@@ -107,7 +128,7 @@ function shuffle(a) {
     return a;
 }
 
-function card(value, name, suit) {
+function card(name, suit) {
     this.name = name;
     this.suit = suit;
 }
@@ -119,7 +140,7 @@ function createDeck() {
 
     for (let i = 0; i < suits.length; i++) {
         for (let j = 0; j < numbers.length; j++) {
-            cards.push(new card(j + 1, numbers[j], suits[i]));
+            cards.push(new card(numbers[j], suits[i]));
         }
     }
     return cards;
