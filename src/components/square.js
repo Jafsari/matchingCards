@@ -8,7 +8,7 @@ class Square extends React.Component {
         super(props);
         this.state = {
             visibility: "None",
-            backgroundColor: this.props.bg || "pink",
+            backgroundColor: this.props.bg || "black",
         }
     };
 

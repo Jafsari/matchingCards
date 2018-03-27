@@ -25,7 +25,7 @@ class Board extends React.Component {
         this.cardsChosen.push(card);
         this.clickedSquares.push(square);
         square.setState({
-            backgroundColor: "red",
+            backgroundColor: "pink",
         })
 
         // once the user has selected 2 cards
@@ -68,10 +68,10 @@ class Board extends React.Component {
         }
         // reset clicked cards because "turn" is over (not necessarily user)
         this.clickedSquares[0].setState({
-            backgroundColor: "pink",
+            backgroundColor: "black",
         })
         this.clickedSquares[1].setState({
-            backgroundColor: "pink",
+            backgroundColor: "black",
         })
         this.cardsChosen = [];
         this.clickedSquares = [];
