@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Square from './square';
 import MatchedBoard from './matchedBoard';
 
+// Board holds the cards and the current game status
 class Board extends React.Component {
     constructor(props) {
         super(props);
@@ -24,11 +25,9 @@ class Board extends React.Component {
     handleClick(card, square) {
         this.cardsChosen.push(card);
         this.clickedSquares.push(square);
-        square.setState({
-            backgroundColor: "pink",
-        })
+        this.setBackground(square, "pink");
 
-        // once the user has selected 2 cards
+        // once the user has selected 2 cards, pause for .3 seconds so user can view selected cards
         if (this.cardsChosen.length === 2) {
             setTimeout(() => { this.handleEndOfTurn() }, 300);
         }
@@ -48,18 +47,16 @@ class Board extends React.Component {
                 pairs: pairs,
             });
             // hide the visibility of the 2 matched cards
-            this.clickedSquares[0].setState({
-                visibility: "hidden",
-            });
-            this.clickedSquares[1].setState({
-                visibility: "hidden",
-            });
+            this.hideVisibility(this.clickedSquares[0]);
+            this.hideVisibility(this.clickedSquares[1])
         }
         else {
             this.setState({
                 currentPlayer: !this.state.currentPlayer,
             });
         }
+
+        // if there are no more visible cards, announce winner and terminate
         if (this.state.remainingCards === 0) {
             this.setState({
                 winningMessage: "WINNER: " + user,
@@ -67,14 +64,25 @@ class Board extends React.Component {
             return
         }
         // reset clicked cards because "turn" is over (not necessarily user)
-        this.clickedSquares[0].setState({
-            backgroundColor: "black",
-        })
-        this.clickedSquares[1].setState({
-            backgroundColor: "black",
-        })
+        this.setBackground(this.clickedSquares[0], "black");
+        this.setBackground(this.clickedSquares[1], "black");
+
         this.cardsChosen = [];
         this.clickedSquares = [];
+    }
+
+    // sets background state of a square
+    setBackground(square, color) {
+        square.setState({
+            backgroundColor: color,
+        })
+    }
+
+    // sets visibility state of a square to "hidden"
+    hideVisibility(square) {
+        square.setState({
+            visibility: "hidden",
+        })
     }
 
     renderSquare(card) {
@@ -120,10 +128,12 @@ class Board extends React.Component {
 
 // ===============CARD METHODS========================
 
+// Returns true if the 2 cards selected are a match.
 function checkMatch(cards) {
     return cards[0].name === cards[1].name;
 }
 
+// Shuffles the deck of 52 cards
 function shuffle(a) {
     for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -137,6 +147,7 @@ function card(name, suit) {
     this.suit = suit;
 }
 
+// creats an IN-ORDER deck of 52 cards
 function createDeck() {
     let cards = [];
     let numbers = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
